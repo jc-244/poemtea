@@ -1,0 +1,5 @@
+# the built binary, if you build it in place
+/poemtea
+
+# macOS
+.DS_Store
