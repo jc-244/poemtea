@@ -70,14 +70,24 @@ func dim(g *Grid, y0, y1 int, amount float64) {
 	}
 }
 
+// putLine centres a line and writes it into the grid.
+//
+// Centring is by display width, not by count of characters: a line of Chinese
+// is half as many characters as it is columns wide, and counting characters
+// would push it a quarter of the screen off to the right.
 func putLine(g *Grid, s string, y int, col RGB, alpha float64) {
-	r := []rune(s)
-	x0 := (g.W - len(r)) / 2
-	if x0 < 0 {
-		x0 = 0
+	x := (g.W - StringWidth(s)) / 2
+	if x < 0 {
+		x = 0
 	}
-	for i, ch := range r {
-		c := g.At(x0+i, y)
+	for _, ch := range s {
+		w := RuneWidth(ch)
+		// A double-width glyph is never split across the right edge: half a
+		// character is worse than no character.
+		if x+w > g.W {
+			break
+		}
+		c := g.At(x, y)
 		if c == nil {
 			break
 		}
@@ -87,10 +97,20 @@ func putLine(g *Grid, s string, y int, col RGB, alpha float64) {
 		bg := c.Fg.Blend(c.Bg, 0.5)
 		if ch == ' ' {
 			c.Ch, c.Fg, c.Bg = ' ', bg, bg
-			continue
+		} else {
+			c.Ch = ch
+			c.Bg = bg
+			c.Fg = bg.Blend(col, alpha)
 		}
-		c.Ch = ch
-		c.Bg = bg
-		c.Fg = bg.Blend(col, alpha)
+		// The second column of a wide glyph is the terminal's to paint, and it
+		// takes the background of the cell the glyph was written into — so a
+		// Chinese character sits on one flat colour two columns wide rather
+		// than on two samples of the image.
+		if w == 2 {
+			if n := g.At(x+1, y); n != nil {
+				n.Ch = contd
+			}
+		}
+		x += w
 	}
 }

@@ -9,6 +9,10 @@
 // not. Pound's Cathay (1915) is safe precisely because Pound himself is out of
 // copyright, not because Li Bai is.
 //
+// A poem left in its own language never has that problem, because there is no
+// translator to have died recently. 杜牧 died in 852 and the Chinese below is
+// his own.
+//
 // EDITORIAL RULE — the harder one.
 //
 // A line qualifies only if it is an image, not an argument. "Petals on a wet,
@@ -19,6 +23,10 @@
 //
 // Three lines is the ceiling. Longer poems are excerpted, and the excerpt has
 // to stand alone without feeling truncated.
+//
+// A Chinese quatrain is set two 句 to a line, the way it is printed, so a whole
+// one is two lines and the ceiling never binds. It has not lost half its lines
+// — please do not restore it to four.
 package poem
 
 type Poem struct {
@@ -148,6 +156,64 @@ var Corpus = []Poem{
 		Lines:  []string{"Season of mists and mellow fruitfulness,", "Close bosom-friend of the maturing sun;"},
 		Author: "John Keats",
 		Source: "To Autumn, 1820",
+	},
+
+	// 杜牧 (803–852). Set two 句 to a line — see the editorial rule above.
+	{
+		Lines:  []string{"远上寒山石径斜，白云生处有人家。", "停车坐爱枫林晚，霜叶红于二月花。"},
+		Author: "杜牧",
+		Source: "山行",
+	},
+	{
+		Lines:  []string{"千里莺啼绿映红，水村山郭酒旗风。", "南朝四百八十寺，多少楼台烟雨中。"},
+		Author: "杜牧",
+		Source: "江南春",
+	},
+	{
+		Lines:  []string{"银烛秋光冷画屏，轻罗小扇扑流萤。", "天阶夜色凉如水，卧看牵牛织女星。"},
+		Author: "杜牧",
+		Source: "秋夕",
+	},
+	{
+		Lines:  []string{"青山隐隐水迢迢，秋尽江南草未凋。", "二十四桥明月夜，玉人何处教吹箫。"},
+		Author: "杜牧",
+		Source: "寄扬州韩绰判官",
+	},
+	{
+		Lines:  []string{"菱透浮萍绿锦池，夏莺千啭弄蔷薇。", "尽日无人看微雨，鹭鸶时立小荷泥。"},
+		Author: "杜牧",
+		Source: "齐安郡后池绝句",
+	},
+	{
+		Lines:  []string{"娉娉袅袅十三余，豆蔻梢头二月初。", "春风十里扬州路，卷上珠帘总不如。"},
+		Author: "杜牧",
+		Source: "赠别二首·其一",
+	},
+	{
+		Lines:  []string{"多情却似总无情，唯觉樽前笑不成。", "蜡烛有心还惜别，替人垂泪到天明。"},
+		Author: "杜牧",
+		Source: "赠别二首·其二",
+	},
+	{
+		Lines:  []string{"落魄江湖载酒行，楚腰纤细掌中轻。", "十年一觉扬州梦，赢得青楼薄幸名。"},
+		Author: "杜牧",
+		Source: "遣怀",
+	},
+	{
+		Lines:  []string{"清时有味是无能，闲爱孤云静爱僧。", "欲把一麾江海去，乐游原上望昭陵。"},
+		Author: "杜牧",
+		Source: "将赴吴兴登乐游原一绝",
+	},
+	{
+		// A 五律 is eight 句, so it is excerpted like any other long poem.
+		Lines:  []string{"雨过一蝉噪，飘萧松桂秋。", "青苔满阶砌，白鸟故迟留。"},
+		Author: "杜牧",
+		Source: "题扬州禅智寺,前两联",
+	},
+	{
+		Lines:  []string{"街垂千步柳，霞映两重城。"},
+		Author: "杜牧",
+		Source: "扬州三首·其一,摘句",
 	},
 }
 

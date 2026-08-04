@@ -56,6 +56,14 @@ type Cell struct {
 	Bg RGB
 }
 
+// contd marks the right half of a double-width character. The glyph lives in
+// the cell to the left and the terminal paints it across both columns, so this
+// one must receive nothing at all.
+//
+// It cannot be folded into Ch == 0, which means "draw a space": a space here
+// would eat the half of the glyph beside it.
+const contd rune = -1
+
 type Grid struct {
 	W, H    int
 	Cells   []Cell
@@ -111,6 +119,14 @@ func (g *Grid) Render() string {
 		for x := 0; x < g.W; x++ {
 			i := y*g.W + x
 			c := g.Cells[i]
+			if c.Ch == contd {
+				// Nothing is sent — the glyph to the left already covers this
+				// column. The diff still has to be told, or the later frame
+				// that puts a narrow character back here will find the cell
+				// unchanged, skip it, and leave half a glyph on screen.
+				g.prev[i] = c
+				continue
+			}
 			if g.hasPrev && indistinguishable(c, g.prev[i]) {
 				continue
 			}
@@ -131,12 +147,15 @@ func (g *Grid) Render() string {
 				curBg = c.Bg
 			}
 			havePen = true
-			if c.Ch == 0 {
-				b.WriteRune(' ')
-			} else {
-				b.WriteRune(c.Ch)
+			ch := c.Ch
+			if ch == 0 {
+				ch = ' '
 			}
-			cx = x + 1
+			b.WriteRune(ch)
+			// A double-width glyph leaves the cursor two columns along, not
+			// one. Getting this wrong sends a needless reposition at best and
+			// silently shifts the rest of the row at worst.
+			cx = x + RuneWidth(ch)
 			// prev records what was actually sent, so the tolerance below never
 			// accumulates: a cell drifting slowly eventually crosses it and is
 			// corrected.
