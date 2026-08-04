@@ -196,6 +196,30 @@ into the middle of someone's terminal is worse than the bug it reports.
 
 If a terminal is ever left in a strange state, `reset` fixes it.
 
+### tmux is another terminal in the way
+
+Two symptoms that look like bugs in this program are one misconfigured tmux: the
+colour drains out of the picture, and frames arrive in pieces. tmux decides what
+the terminal outside it can do from that terminal's terminfo entry, and
+`xterm-256color` claims neither 24-bit colour nor synchronized output — so every
+RGB value is downsampled to the 256 palette and the `?2026` markers each frame is
+wrapped in are swallowed. `COLORTERM=truecolor` in the environment does not
+persuade it.
+
+```bash
+# ~/.tmux.conf — name whatever TERM the outer terminal actually reports
+set -ag terminal-features ",xterm-256color:RGB:sync"
+```
+
+That is read when a client attaches and never again, so a client that is already
+attached keeps the capabilities it was born with. Reattach, and check before
+concluding anything — testing in the old client will tell you the fix did not
+work:
+
+```bash
+tmux display -p '#{client_termfeatures}'   # RGB and sync must both appear
+```
+
 ## Known limitations
 
 - **Truecolor is assumed.** The scene emits 24-bit colour; a terminal that
