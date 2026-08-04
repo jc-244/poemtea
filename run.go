@@ -98,11 +98,14 @@ func runWrap(args []string) error {
 	defer tick.Stop()
 
 	var (
-		showing   bool
-		leaving   bool
-		reveal    float64 // 0 flat field, 1 full picture
-		busySince time.Time
-		idleSince time.Time
+		showing bool
+		leaving bool
+		// raisedByAgent records which of the two ways in put the picture up,
+		// because they do not have the same way out. See turnIsOver.
+		raisedByAgent bool
+		reveal        float64 // 0 flat field, 1 full picture
+		busySince     time.Time
+		idleSince     time.Time
 		showAt    float64 // seconds the picture has been up; drives the poem's fade
 		lastPoll  time.Time
 		lastFull  time.Time
@@ -175,14 +178,17 @@ func runWrap(args []string) error {
 				// oscillation inside it never surfaces here. What this threshold
 				// decides is which turns are long enough to be worth covering
 				// the screen for; a three-second answer never is.
-				why := ""
+				why, byAgent := "", false
 				switch {
 				case busy && !busySince.IsZero() && now.Sub(busySince).Seconds() >= after:
-					why = "agent working"
+					why, byAgent = "agent working", true
 				// And the plain screensaver case: nothing has moved at all for a
 				// while. Requiring the host to be quiet too means this can never
 				// cover an answer while it is still being written — only one you
 				// have already stopped reading.
+				//
+				// This one leaves only when you touch the keyboard. Nothing else
+				// is evidence that you came back.
 				case idle > 0 && now.Sub(lastKey).Seconds() >= idle &&
 					now.Sub(w.LastOutput()).Seconds() >= idle:
 					why = "nothing has moved"
@@ -194,6 +200,7 @@ func runWrap(args []string) error {
 					grid.Invalidate()
 					w.Mute()
 					showing, leaving = true, false
+					raisedByAgent = byAgent
 				}
 				continue
 			}
@@ -226,11 +233,30 @@ func runWrap(args []string) error {
 			render.DrawPoem(grid, cur.Lines, attribution(cur), poemAlpha(showAt)*clamp01(reveal))
 			w.Paint(grid.Render())
 
-			if !busy && !idleSince.IsZero() && now.Sub(idleSince).Seconds() >= linger {
+			if turnIsOver(raisedByAgent, busy, idleSince, now, linger) {
 				leave("agent stopped working")
 			}
 		}
 	}
+}
+
+// turnIsOver reports whether the turn the picture went up for has ended.
+//
+// The guard on raisedByAgent is the whole of this function. The two ways in do
+// not share a way out, and for a while they did: the screensaver raises the
+// layer when nothing has moved for half a minute, which can only be true of a
+// machine whose agent stopped working long before — so "idle for longer than
+// linger" is already satisfied at the instant that picture appears. The layer
+// went up and came down again every three frames, which on screen is not a
+// dissolve but a flicker.
+//
+// A picture raised because nothing has moved leaves when you touch the
+// keyboard, and at no other time. Nothing else is evidence that you came back.
+func turnIsOver(raisedByAgent, busy bool, idleSince, now time.Time, linger float64) bool {
+	if !raisedByAgent || busy || idleSince.IsZero() {
+		return false
+	}
+	return now.Sub(idleSince).Seconds() >= linger
 }
 
 func clamp01(v float64) float64 {
