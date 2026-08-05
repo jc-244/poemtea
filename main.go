@@ -24,7 +24,7 @@ const usage = `poemtea — your agent is running, and there is a poem on the scr
 While running, any keystroke gives the screen straight back to the host — the
 picture never stands between you and the tool. Quit by quitting the host.
 
-run flags:  -after 8      seconds of agent work before the picture appears
+run flags:  -after 16     seconds of agent work before the picture appears
             -linger 1.5   seconds of quiet before it goes away
             -idle 30      seconds of nothing at all before it appears anyway
                           (0 turns the plain screensaver off)

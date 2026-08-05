@@ -48,7 +48,7 @@ const (
 // was found by shipping a bug onto a real screen. Moving the same effect into
 // our own canvas costs forty lines and cannot be wrong.
 func runWrap(args []string) error {
-	after := 8.0  // how long it must be busy before the picture appears
+	after := 16.0 // how long it must be busy before the picture appears
 	linger := 1.5 // how long it must be quiet before it goes away
 	idle := 30.0  // how long everything must be still before it appears anyway
 
@@ -75,7 +75,7 @@ func runWrap(args []string) error {
 		}
 	}
 	if len(argv) == 0 {
-		return fmt.Errorf("usage: poemtea run [-after 8] [-linger 1.5] [-idle 30] -- <command>")
+		return fmt.Errorf("usage: poemtea run [-after 16] [-linger 1.5] [-idle 30] -- <command>")
 	}
 
 	w, err := wrap.Start(argv)

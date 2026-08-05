@@ -65,9 +65,9 @@ The trigger is the whole turn, not "thinking" specifically:
 you press enter
   │  UserPromptSubmit -> busy
   ▼
-  ├─ 0s ─────── 8s ────────────────────────────┐
-  │              └─ still busy: picture assembles │
-  ▼                                             ▼
+  ├─ 0s ────────── 16s ────────────────────────────┐
+  │              └─ still busy: picture assembles  │
+  ▼                                                ▼
 Stop -> idle ──> quiet for 1.5s ──> it comes apart
 ```
 
@@ -88,7 +88,7 @@ To quit, quit the agent. `poemtea` exits with it and restores the terminal.
 
 | Flag | Default | |
 |---|---|---|
-| `-after` | 8 | seconds of agent work before the picture appears |
+| `-after` | 16 | seconds of agent work before the picture appears |
 | `-linger` | 1.5 | seconds of quiet before it goes away |
 | `-idle` | 30 | seconds of nothing at all before it appears anyway; `0` turns this off |
 
