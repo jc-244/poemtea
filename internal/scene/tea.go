@@ -132,7 +132,7 @@ func (s *Tea) Draw(c *render.Canvas, t, dt float64) {
 	s.pot(c, t)
 	s.steam(c, dt)
 	s.pavilion(c)
-	s.vignette(c)
+	vignette(c, 0.62, 0.55)
 }
 
 func (s *Tea) sky(c *render.Canvas) {
@@ -158,16 +158,17 @@ func (s *Tea) ridge(x, base, amp, freq, phase float64) float64 {
 // perspective is the only depth cue available at this size.
 func (s *Tea) ridges(c *render.Canvas) {
 	hz, fh := s.tableY, float64(s.h)
+	layers := [...]struct {
+		amp, freq, phase float64
+		col              render.RGB
+	}{
+		{fh * 0.46, 3.4, 0.6, ridge1},
+		{fh * 0.32, 5.2, 2.4, ridge2},
+		{fh * 0.19, 8.1, 5.1, ridge3},
+	}
 	for x := 0; x < c.W; x++ {
 		fx := float64(x)
-		for _, r := range []struct {
-			amp, freq, phase float64
-			col              render.RGB
-		}{
-			{fh * 0.46, 3.4, 0.6, ridge1},
-			{fh * 0.32, 5.2, 2.4, ridge2},
-			{fh * 0.19, 8.1, 5.1, ridge3},
-		} {
+		for _, r := range layers {
 			for y := int(s.ridge(fx, hz, r.amp, r.freq, r.phase)); y < int(hz); y++ {
 				c.Set(x, y, r.col)
 			}
@@ -515,21 +516,5 @@ func (s *Tea) pavilion(c *render.Canvas) {
 	// The beam across the top: the roof, seen as the underside of its edge.
 	for y := 0; y < int(beam); y++ {
 		c.Fill(y, lacquerDim.Blend(render.RGB{}, float64(y)/beam*0.5))
-	}
-}
-
-func (s *Tea) vignette(c *render.Canvas) {
-	cx, cy := float64(c.W)/2, float64(c.H)/2
-	maxD := math.Hypot(cx, cy*0.75)
-	for y := 0; y < c.H; y++ {
-		for x := 0; x < c.W; x++ {
-			d := math.Hypot(float64(x)-cx, (float64(y)-cy)*0.75) / maxD
-			if d < 0.62 {
-				continue
-			}
-			f := (d - 0.62) / 0.38
-			i := y*c.W + x
-			c.Px[i] = c.Px[i].Scale(1 - f*f*0.55)
-		}
 	}
 }

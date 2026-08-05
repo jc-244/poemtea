@@ -103,7 +103,7 @@ func runDemo() error {
 		}
 	}()
 
-	sc := scene.NewTea()
+	var sc scene.Scene = scene.NewTea()
 	deck := poem.NewDeck(uint64(time.Now().UnixNano()))
 	cur := deck.Next()
 

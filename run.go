@@ -89,7 +89,7 @@ func runWrap(args []string) error {
 	canvas := render.NewCanvas(cols, rows)
 	grid := render.NewGrid(cols, rows)
 
-	sc := scene.NewTea()
+	var sc scene.Scene = scene.NewTea()
 	rev := scene.NewReveal(seed)
 	deck := poem.NewDeck(seed)
 	cur := deck.Next()

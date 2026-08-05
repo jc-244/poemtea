@@ -103,7 +103,7 @@ func (r *Rain) Draw(c *render.Canvas, t, dt float64) {
 	r.drawWater(c, t, hz, flicker)
 	r.drawRain(c, dt, hz)
 	r.drawRings(c, dt, hz)
-	r.vignette(c)
+	vignette(c, 0.55, 0.75)
 }
 
 func (r *Rain) drawSky(c *render.Canvas, t, hz float64) {
@@ -304,22 +304,4 @@ func (r *Rain) drawRings(c *render.Canvas, dt, hz float64) {
 		out = append(out, rg)
 	}
 	r.rings = out
-}
-
-// vignette darkens the edges. In a terminal this matters more than it does on
-// a screen: it stops the art from looking like it was clipped by the window.
-func (r *Rain) vignette(c *render.Canvas) {
-	cx, cy := float64(c.W)/2, float64(c.H)/2
-	maxD := math.Hypot(cx, cy*0.75)
-	for y := 0; y < c.H; y++ {
-		for x := 0; x < c.W; x++ {
-			d := math.Hypot(float64(x)-cx, (float64(y)-cy)*0.75) / maxD
-			if d < 0.55 {
-				continue
-			}
-			f := (d - 0.55) / 0.45
-			i := y*c.W + x
-			c.Px[i] = c.Px[i].Scale(1 - f*f*0.75)
-		}
-	}
 }
