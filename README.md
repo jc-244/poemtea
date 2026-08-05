@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="POEM &amp; TEA" width="600">
+  <picture>
+    <source srcset="docs/logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/logo-light.svg" media="(prefers-color-scheme: light)">
+    <img src="docs/logo-light.svg" alt="POEM &amp; TEA" width="520">
+  </picture>
 </p>
 
 
@@ -98,50 +102,6 @@ poemtea busy | idle        mark a session working or done (called by hooks)
 poemtea run -after 30 -idle 0 -- claude
 ```
 
-### When the picture appears
-
-```
-you press enter
-  │  UserPromptSubmit -> busy
-  ▼
-  ├─ 0s ────────── 16s ────────────────────────────┐
-  │              └─ still busy: picture assembles  │
-  ▼                                                ▼
-Stop -> idle ──> quiet for 1.5s ──> it comes apart
-```
-
-The trigger is the whole turn, not "thinking" specifically. The
-think/tool/think oscillation inside a turn is deliberately invisible, so one
-turn is at most one interruption. What `-after` decides is which turns are long
-enough to be worth covering the screen for.
-
-There is a second way in: nothing has moved at all for `-idle` seconds — no key
-pressed and nothing drawn by the agent either. Requiring both to be still means
-it can never cover an answer while it is still being written, only one you have
-already stopped reading.
-
-### When it goes away
-
-**Anything deliberate** — a key, a click, the wheel turned up or down. Not the
-mouse drifting across the window, not a drag, not the wheel going sideways, and
-not you switching to another application.
-
-This is also the escape hatch: if the busy flag ever sticks, one keystroke gets
-your terminal back.
-
-### How the hooks decide
-
-The whole rule is: **the agent working on its own is busy; the agent waiting on
-you is not.**
-
-| Event | Marks | Why |
-|---|---|---|
-| `UserPromptSubmit` | busy | you handed the work over |
-| `PostToolUse` | busy | it is (back) working on its own |
-| `PermissionRequest` | **idle** | it is waiting on *you* — give the screen back at once |
-| `Notification` | **idle** | likewise, anything wanting your attention |
-| `Stop` | idle | the turn is over |
-| `SessionEnd` | idle | the session is over |
 
 ## Other agents
 
@@ -152,10 +112,7 @@ working can join in with a three-line hook, and the renderer does not change.
 
 ## The poems
 
-杜牧 (803–852), every 绝句 in 全唐詩 卷520–527 — 206 of them, public domain.
-Nobody selected them; the definition is arithmetic. `internal/poem/corpus.go`
-is generated, and `corpus.py` beside it rebuilds it from the source. Add a poem
-by teaching the generator to find it, not by typing it in.
+杜牧在全唐诗里的绝句
 
 ## Troubleshooting
 

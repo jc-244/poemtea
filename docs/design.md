@@ -65,6 +65,39 @@ of bug along with an emulator, six dependencies and four hundred lines.
 The rule that survives, and that is worth keeping if this is ever extended:
 **never hand back a concrete value for something the terminal owns.**
 
+## When the picture appears
+
+```
+you press enter
+  │  UserPromptSubmit -> busy
+  ▼
+  ├─ 0s ────────── 16s ────────────────────────────┐
+  │              └─ still busy: picture assembles  │
+  ▼                                                ▼
+Stop -> idle ──> quiet for 1.5s ──> it comes apart
+```
+
+The trigger is the whole turn, not "thinking" specifically. The
+think/tool/think oscillation inside a turn is deliberately invisible, so one
+turn is at most one interruption. What `-after` decides is which turns are long
+enough to be worth covering the screen for.
+
+## What the hooks mean
+
+The whole rule is: the agent working on its own is busy; the agent waiting on
+you is not.
+
+| Event | Marks | Why |
+|---|---|---|
+| `UserPromptSubmit` | busy | you handed the work over |
+| `PostToolUse` | busy | it is (back) working on its own |
+| `PermissionRequest` | **idle** | it is waiting on *you* — give the screen back at once |
+| `Notification` | **idle** | likewise, anything wanting your attention |
+| `Stop` | idle | the turn is over |
+| `SessionEnd` | idle | the session is over |
+
+`poemtea install-hooks` prints the same table beside the configuration.
+
 ## Why `PostToolUse` marks busy
 
 It looks redundant beside `UserPromptSubmit` and is not. Without it, a turn
