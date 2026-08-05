@@ -74,13 +74,15 @@ Stop -> idle ──> quiet for 1.5s ──> it comes apart
 The think/tool/think oscillation inside a turn is deliberately invisible: one
 turn is one continuous busy period, so one turn is at most one interruption.
 
-**Any key press sends the picture away** — a real press, not the mouse drifting
-across the window and not you switching to another application. The host turns
-on mouse and focus reporting, so those arrive on the same channel as typing and
-have to be told apart (`internal/wrap/keys.go`). The key still reaches the agent the instant
-you type it, so you can start writing your next message while the picture
-clears. This is also the escape hatch: if the busy flag ever sticks (a
-hook that never fired, an agent that crashed), one key gets your terminal back.
+**Anything deliberate sends the picture away** — a key, a click, the wheel
+turned up or down. Not the mouse drifting across the window, not a drag, not
+the wheel going sideways, and not you switching to another application. The
+host turns mouse and focus reporting on, so all of it arrives on the same
+channel as typing and has to be told apart (`internal/wrap/keys.go`). What
+reaches the agent is untouched and immediate either way, so you can start
+writing your next message while the picture clears. This is also the escape
+hatch: if the busy flag ever sticks (a hook that never fired, an agent that
+crashed), one keystroke gets your terminal back.
 
 To quit, quit the agent. `poemtea` exits with it and restores the terminal.
 

@@ -9,8 +9,8 @@ package wrap
 // away from a mouse drifting past, or from you clicking on a different window
 // entirely, which is not what "you are back" means.
 //
-// Only a deliberate press counts. Everything the terminal says on its own does
-// not.
+// Only something deliberate counts: a key, a button going down, the wheel
+// turned up or down. Everything the terminal says on its own does not.
 type keyDetect struct{ pending []byte }
 
 // sawKey reports whether a chunk from the keyboard contains a real key press.
@@ -75,6 +75,46 @@ func scanKey(b []byte, i int) (end int, complete, key bool) {
 	}
 }
 
+// The two flags a mouse button code can carry, in both encodings.
+const (
+	mouseMoving = 32 // the pointer moved, with or without a button held
+	mouseWheel  = 64 // the wheel turned; the low two bits say which way
+)
+
+// deliberate reports whether a mouse report is you doing something rather than
+// the pointer merely being somewhere.
+//
+// A button going down is you, and so is the wheel turned up or down. Motion is
+// not — the pointer crossing the window while you are reading is exactly the
+// case this whole file exists to ignore, and a drag is motion too. Nor is a
+// release: it is the far end of a press that has already been counted.
+//
+// The wheel's direction is in the code, so scrolling sideways can be told from
+// scrolling down and left alone. A trackpad emits a great many of those on its
+// way through a diagonal gesture.
+func deliberate(code int, press bool) bool {
+	switch {
+	case code&mouseMoving != 0:
+		return false
+	case code&mouseWheel != 0:
+		return code&3 <= 1 // 0 up, 1 down; 2 and 3 are sideways
+	default:
+		return press
+	}
+}
+
+// sgrButton reads the button number at the head of an SGR mouse report.
+func sgrButton(body []byte) int {
+	n := 0
+	for _, c := range body {
+		if c < '0' || c > '9' {
+			break
+		}
+		n = n*10 + int(c-'0')
+	}
+	return n
+}
+
 func scanKeyCSI(b []byte, i int) (end int, complete, key bool) {
 	j := i + 2
 	for j < len(b) && b[j] >= 0x20 && b[j] <= 0x3f {
@@ -88,14 +128,20 @@ func scanKeyCSI(b []byte, i int) (end int, complete, key bool) {
 
 	switch {
 	case final == 'M' && len(body) == 0:
-		// The original mouse encoding: three raw bytes follow, and they can look
-		// like anything, so they have to be stepped over rather than parsed.
+		// The original mouse encoding: three raw bytes follow, and two of them
+		// can look like anything, so they are stepped over rather than parsed.
+		// The first is the button, offset by 32 like the coordinates.
 		if j+3 >= len(b) {
 			return i, false, false
 		}
-		return j + 4, true, false
+		code := int(b[j+1]) - 32
+		// This encoding has no separate release event: the low two bits say
+		// which button, and all three set says one was let go.
+		return j + 4, true, deliberate(code, code&3 != 3)
 	case (final == 'M' || final == 'm') && len(body) > 0 && body[0] == '<':
-		return j + 1, true, false // SGR mouse report
+		// SGR: ESC [ < button ; column ; row, ending in M for a press and m
+		// for a release.
+		return j + 1, true, deliberate(sgrButton(body[1:]), final == 'M')
 	case (final == 'I' || final == 'O') && len(body) == 0:
 		return j + 1, true, false // focus in / focus out
 	case final == 'R' || final == 'c' || final == 'y' || final == 'n' || final == 't':
