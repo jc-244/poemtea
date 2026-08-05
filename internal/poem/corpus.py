@@ -60,7 +60,7 @@ def page_of(vol):
     if os.path.exists(path) and os.path.getsize(path) > 1000:
         return open(path).read()
     req = urllib.request.Request(API.format(vol), headers={
-        "User-Agent": "poemtea-corpus/1.0 (+https://github.com/jc-244/POEM-TEA)"})
+        "User-Agent": "poemtea-corpus/1.0 (+https://github.com/jc-244/poemtea)"})
     for _ in range(5):
         try:
             text = json.load(urllib.request.urlopen(req, timeout=40))["parse"]["text"]

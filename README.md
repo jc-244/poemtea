@@ -2,9 +2,6 @@
   <img src="docs/logo.svg" alt="POEM &amp; TEA" width="600">
 </p>
 
-<h3 align="center">闲笔</h3>
-
-<p align="center"><em>闲笔不闲</em></p>
 
 <p align="center">
   Your agent is running, and there is a poem on the screen.
