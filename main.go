@@ -98,9 +98,7 @@ func runDemo() error {
 		}
 	}()
 
-	scenes := scene.All()
-	nextScene := 0
-	sc := scenes[0]
+	sc := scene.NewTea()
 	deck := poem.NewDeck(uint64(time.Now().UnixNano()))
 	cur := deck.Next()
 
@@ -123,8 +121,6 @@ func runDemo() error {
 				return nil
 			case 'n':
 				cur = deck.Next()
-				nextScene++
-				sc = scenes[nextScene%len(scenes)]
 				phase = 0
 			}
 		case now := <-tick.C:
@@ -152,8 +148,6 @@ func runDemo() error {
 			alpha := poemAlpha(phase)
 			if phase > holdFor+fadeOut+restFor {
 				cur = deck.Next()
-				nextScene++
-				sc = scenes[nextScene%len(scenes)]
 				phase = 0
 			}
 			render.DrawPoem(grid, cur.Lines, attribution(cur), alpha)

@@ -89,9 +89,7 @@ func runWrap(args []string) error {
 	canvas := render.NewCanvas(cols, rows)
 	grid := render.NewGrid(cols, rows)
 
-	scenes := scene.All()
-	nextScene := 0
-	sc := scenes[0]
+	sc := scene.NewTea()
 	rev := scene.NewReveal(seed)
 	deck := poem.NewDeck(seed)
 	cur := deck.Next()
@@ -197,8 +195,6 @@ func runWrap(args []string) error {
 				}
 				if why != "" {
 					dbg.Printf("layer up: %s", why)
-					sc = scenes[nextScene%len(scenes)]
-					nextScene++
 					cur = deck.Next()
 					showAt, reveal = 0, 0
 					grid.Invalidate()
