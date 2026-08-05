@@ -243,9 +243,26 @@ tmux display -p '#{client_termfeatures}'   # RGB and sync must both appear
 
 ## The corpus
 
-`internal/poem/poem.go` carries two rules in its header, and they matter more
-than the code around them: everything must be unambiguously public domain
-(**including the translation**, which is the one people get wrong), and every
-line must be an image rather than an argument. An image can be abandoned
-mid-read and lose nothing. An aphorism asks to be finished — and anything that
-asks to be finished turns waiting back into a task.
+杜牧 (803–852), every 绝句 in 全唐詩 卷520–527 — 206 of them. Nobody selected
+them. The definition is arithmetic:
+
+> a 绝句 is four 句 of uniform length, five or seven characters each.
+
+`internal/poem/corpus.go` is generated; `corpus.py` beside it rebuilds the file
+from wikisource, where 全唐詩 is public domain. Add a poem by teaching the
+generator to find it, not by typing it in.
+
+The readings are 全唐詩's own and are not always the familiar ones — 红烛 for
+银烛, 折戟沈沙 for 沉沙, 十三馀 for 十三余. Where the source marks a variant
+inline, the base reading is kept and the note dropped.
+
+A quatrain is set two 句 to a line, the way it is printed, so a poem is two
+lines of thirty-two columns. It has not lost half its lines.
+
+The generator is mostly defence against its source. Those volumes were
+transcribed by different hands: three page layouts, some poems punctuated and
+some not, footnote markers mid-line, 校勘 notes set inline inside the verse.
+Three versions of it were wrong and all three were quiet about it — one sliced
+every 律诗 in half and produced quatrains Du Mu never wrote. What caught them
+is the list at the bottom of the script: named poems that must come out, 律诗
+lines that must not. It runs before anything is written.
