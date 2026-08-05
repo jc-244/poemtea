@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="TEA &amp; COFFEE" width="600">
+  <img src="docs/logo.svg" alt="POEM &amp; TEA" width="600">
 </p>
 
 <h3 align="center">闲笔</h3>
