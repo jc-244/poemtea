@@ -24,6 +24,18 @@ func (c *Canvas) Set(x, y int, col RGB) {
 	c.Px[y*c.W+x] = col
 }
 
+// Fill paints one whole row. Skies, water and table tops are all built a row
+// at a time.
+func (c *Canvas) Fill(y int, col RGB) {
+	if y < 0 || y >= c.H {
+		return
+	}
+	row := c.Px[y*c.W : (y+1)*c.W]
+	for i := range row {
+		row[i] = col
+	}
+}
+
 // Add blends col over the existing pixel with weight a. Rain, glow and ripples
 // all draw this way so they layer without hard edges.
 func (c *Canvas) Add(x, y int, col RGB, a float64) {

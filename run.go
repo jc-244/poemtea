@@ -89,7 +89,9 @@ func runWrap(args []string) error {
 	canvas := render.NewCanvas(cols, rows)
 	grid := render.NewGrid(cols, rows)
 
-	sc := scene.NewRain()
+	scenes := scene.All()
+	nextScene := 0
+	sc := scenes[0]
 	rev := scene.NewReveal(seed)
 	deck := poem.NewDeck(seed)
 	cur := deck.Next()
@@ -106,13 +108,13 @@ func runWrap(args []string) error {
 		reveal        float64 // 0 flat field, 1 full picture
 		busySince     time.Time
 		idleSince     time.Time
-		showAt    float64 // seconds the picture has been up; drives the poem's fade
-		lastPoll  time.Time
-		lastFull  time.Time
-		busy      bool
-		start     = time.Now()
-		last      = start
-		lastKey   = start
+		showAt        float64 // seconds the picture has been up; drives the poem's fade
+		lastPoll      time.Time
+		lastFull      time.Time
+		busy          bool
+		start         = time.Now()
+		last          = start
+		lastKey       = start
 	)
 
 	// leave starts the picture coming apart. Both ways out use it — the agent
@@ -195,6 +197,8 @@ func runWrap(args []string) error {
 				}
 				if why != "" {
 					dbg.Printf("layer up: %s", why)
+					sc = scenes[nextScene%len(scenes)]
+					nextScene++
 					cur = deck.Next()
 					showAt, reveal = 0, 0
 					grid.Invalidate()

@@ -233,10 +233,11 @@ tmux display -p '#{client_termfeatures}'   # RGB and sync must both appear
 - **It does not know whether you are at the keyboard.** A turn longer than
   `-after` takes the screen whether you were staring at it thinking or had
   walked away.
-- **One scene** (rain). English and Chinese are both set correctly — the text
-  layer measures a line in columns rather than in characters, and a
-  double-width character takes the cell beside it out of our hands entirely.
-  Scripts that need combining marks or joined forms are untested.
+- **Two scenes**, rain and a tea pavilion, which take turns. English and
+  Chinese are both set correctly — the text layer measures a line in columns
+  rather than in characters, and a double-width character takes the cell beside
+  it out of our hands entirely. Scripts that need combining marks or joined
+  forms are untested.
 - **Quitting the agent leaves its last frame on screen** rather than restoring
   the shell view you had before, because we hold the alternate buffer it would
   otherwise have used.

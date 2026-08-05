@@ -2,9 +2,10 @@ package render
 
 import "testing"
 
-// The English corpus has assumed since the first line was drawn that an
-// ambiguous-width character is one cell. If that ever changes, every existing
-// poem silently shifts off centre, so it is pinned here.
+// An ambiguous-width character is one cell. The em dash that opens every
+// attribution is one of them, and the library will answer differently if it is
+// ever allowed to consult the locale — so the answer is pinned here, where a
+// change shows up as a failing test rather than as a line off centre.
 func TestAmbiguousCharactersAreOneCell(t *testing.T) {
 	for _, tc := range []struct {
 		s    string
