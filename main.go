@@ -68,10 +68,15 @@ func main() {
 
 const (
 	fps     = 20
-	fadeIn  = 1.6  // seconds for the poem to arrive
-	fadeOut = 1.2  // and to leave
-	holdFor = 18.0 // how long a poem stays before the next one
-	restFor = 3.0  // bare picture between poems, so the words are an event
+	fadeIn  = 1.6 // seconds for the poem to arrive
+	fadeOut = 1.2 // and to leave
+	restFor = 3.0 // bare picture between poems, so the words are an event
+
+	// cycle is one poem a minute, fade and gap included. It is the number
+	// anyone actually means, so it is the one written down; how long the words
+	// stand still follows from it.
+	cycle   = 60.0
+	holdFor = cycle - fadeOut - restFor
 )
 
 func runDemo() error {
@@ -146,7 +151,7 @@ func runDemo() error {
 			canvas.ToGrid(grid)
 
 			alpha := poemAlpha(phase)
-			if phase > holdFor+fadeOut+restFor {
+			if phase > cycle {
 				cur = deck.Next()
 				phase = 0
 			}

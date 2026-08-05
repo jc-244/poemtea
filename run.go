@@ -226,7 +226,7 @@ func runWrap(args []string) error {
 			// any idea of what the host had on screen.
 			rev.Apply(canvas, reveal, scene.Base)
 			canvas.ToGrid(grid)
-			if showAt > holdFor+fadeOut+restFor {
+			if showAt > cycle {
 				cur = deck.Next()
 				showAt = 0
 			}
